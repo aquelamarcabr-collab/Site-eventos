@@ -22,12 +22,11 @@ robots.txt, sitemap.xml, netlify.toml   SEO e configuração de deploy
 
 ## ⚠️ Antes de publicar — dados a confirmar com o cliente
 
-WhatsApp (`+55 11 97705-3323`) e e-mail (`aquelamarca.br@gmail.com`) já estão atualizados em todo o site. Ainda restam estes placeholders para confirmar:
+WhatsApp (`+55 11 97705-3323`) e e-mail (`aquelamarca.br@gmail.com`) já estão atualizados em todo o site. O cliente não possui Instagram, então todos os links/ícones foram removidos. Ainda resta este placeholder para confirmar:
 
 | Placeholder usado | Onde aparece | Trocar por |
 |---|---|---|
-| `@grmastereventos` / `instagram.com/grmastereventos` | Footer, Contato | Perfil real do Instagram |
-| `grmastereventos.com.br` | Meta tags `canonical`, `og:url`, JSON-LD, `sitemap.xml`, `robots.txt` | Domínio definitivo do site |
+| `grmastereventos.com.br` | Meta tags `canonical`, `og:url`, JSON-LD, `sitemap.xml`, `robots.txt` | Domínio definitivo do site (ou o domínio `.netlify.app` gerado no deploy) |
 
 Dica: como todos os arquivos repetem o mesmo header/footer, um `find` + `sed` resolve rápido, por exemplo:
 ```bash
