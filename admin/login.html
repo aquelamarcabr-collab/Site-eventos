@@ -60,7 +60,8 @@
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      errorBox.textContent = 'E-mail ou senha inválidos.';
+      console.error('Supabase auth error:', error);
+      errorBox.textContent = 'Erro ao entrar: ' + error.message + ' (status ' + (error.status || '?') + ')';
       errorBox.classList.add('show');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Entrar';
