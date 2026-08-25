@@ -219,5 +219,37 @@
 </a>
 
 <script src="js/main.js"></script>
+<script type="module">
+  import { supabase } from './js/supabase.js';
+
+  const form = document.getElementById('form');
+  if (form) {
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const fd = new FormData(form);
+
+      const record = {
+        nome: fd.get('nome'),
+        telefone: fd.get('telefone'),
+        email: fd.get('email'),
+        tipo_evento: fd.get('tipo_evento') || null,
+        data_evento: fd.get('data_evento') || null,
+        convidados: fd.get('convidados') ? parseInt(fd.get('convidados'), 10) : null,
+        mensagem: fd.get('mensagem')
+      };
+
+      try {
+        await Promise.race([
+          supabase.from('contacts').insert(record),
+          new Promise((resolve) => setTimeout(resolve, 3000))
+        ]);
+      } catch (err) {
+        console.error('Erro ao salvar orçamento no painel admin:', err);
+      }
+
+      form.submit();
+    });
+  }
+</script>
 </body>
 </html>

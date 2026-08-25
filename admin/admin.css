@@ -1,0 +1,91 @@
+/* Painel Admin — estilos específicos */
+body.admin-body{background:var(--off-white);min-height:100vh;}
+
+.admin-login-wrap{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 55%,#0a1d34 100%);
+}
+.admin-login-card{
+  background:#fff;border-radius:20px;padding:44px 38px;width:100%;max-width:400px;box-shadow:var(--shadow-lg);
+}
+.admin-login-card img{height:36px;margin-bottom:24px;}
+.admin-login-card h1{font-size:1.4rem;margin-bottom:6px;}
+.admin-login-card p.sub{color:var(--text-light);font-size:.9rem;margin-bottom:28px;}
+.admin-error{
+  display:none;background:#FBEAEA;border:1px solid #E9B4B4;color:#A33A3A;padding:12px 14px;
+  border-radius:10px;font-size:.85rem;margin-bottom:18px;
+}
+.admin-error.show{display:block;}
+
+.admin-topbar{
+  background:var(--navy);color:#fff;padding:16px 0;position:sticky;top:0;z-index:100;
+}
+.admin-topbar .container{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.admin-topbar img{height:30px;}
+.admin-topbar .who{display:flex;align-items:center;gap:14px;font-size:.85rem;color:rgba(255,255,255,.7);}
+.admin-topbar .who strong{color:#fff;}
+
+.admin-main{padding:36px 0 80px;}
+.admin-tabs{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+.admin-tab-btn{
+  padding:11px 22px;border-radius:50px;border:1.5px solid var(--border);background:#fff;
+  font-weight:600;font-size:.9rem;color:var(--navy);transition:.2s;
+}
+.admin-tab-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.admin-panel{display:none;}
+.admin-panel.active{display:block;}
+
+.admin-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.admin-toolbar h2{font-size:1.3rem;}
+
+.admin-card-list{display:grid;gap:16px;}
+.lead-card{
+  background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px 24px;
+  display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;
+}
+.lead-card .main h3{font-size:1.05rem;margin-bottom:4px;}
+.lead-card .meta-row{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--text-light);margin:8px 0;}
+.lead-card .meta-row a{color:var(--bronze-dark);font-weight:600;}
+.lead-card .msg{font-size:.9rem;color:var(--text);background:var(--off-white);padding:12px 14px;border-radius:10px;margin-top:8px;}
+.lead-card .side{display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.lead-card select{
+  padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font:inherit;font-size:.82rem;font-weight:600;
+}
+.lead-date{font-size:.76rem;color:var(--text-light);white-space:nowrap;}
+
+.status-badge{padding:4px 12px;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:inline-block;}
+.status-novo{background:#E6EEF9;color:#2456A6;}
+.status-em_contato{background:#FDF1DC;color:#A9701A;}
+.status-fechado{background:#E4F5E8;color:#22753A;}
+
+.post-row{
+  background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 22px;
+  display:flex;align-items:center;gap:16px;
+}
+.post-row .emoji{font-size:1.6rem;width:44px;height:44px;border-radius:10px;background:var(--off-white);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.post-row .info{flex:1;min-width:0;}
+.post-row .info h3{font-size:1rem;margin-bottom:3px;}
+.post-row .info .meta{font-size:.78rem;color:var(--text-light);}
+.post-row .actions{display:flex;gap:8px;flex-shrink:0;}
+.icon-btn{
+  padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:.8rem;font-weight:600;color:var(--navy);
+  background:#fff;
+}
+.icon-btn.danger{color:#B23A3A;border-color:#EFC4C4;}
+.icon-btn:hover{background:var(--off-white);}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-light);}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(11,35,64,.55);display:none;align-items:center;justify-content:center;
+  padding:24px;z-index:1000;overflow-y:auto;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:#fff;border-radius:18px;padding:36px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
+}
+.modal-box h2{margin-bottom:20px;}
+.modal-actions{display:flex;gap:12px;margin-top:24px;justify-content:flex-end;}
+.checkbox-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.checkbox-row input{width:auto;}
+.spinner-text{color:var(--text-light);font-size:.9rem;padding:20px 0;}

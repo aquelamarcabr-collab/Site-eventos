@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — G.R. Master</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/logo-icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+<div class="admin-topbar">
+  <div class="container">
+    <img src="../assets/logo-white.svg" alt="G.R. Master Eventos & Consultoria">
+    <div class="who">
+      <strong id="user-email">...</strong>
+      <a href="../index.html" class="btn btn-outline btn-sm">Ver site</a>
+      <button class="btn btn-primary btn-sm" id="logout-btn">Sair</button>
+    </div>
+  </div>
+</div>
+
+<main class="admin-main">
+  <div class="container">
+
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="leads">Orçamentos</button>
+      <button class="admin-tab-btn" data-tab="posts">Blog</button>
+    </div>
+
+    <!-- ORÇAMENTOS -->
+    <section class="admin-panel active" id="panel-leads">
+      <div class="admin-toolbar">
+        <h2>Pedidos de orçamento</h2>
+        <button class="icon-btn" id="refresh-leads">Atualizar</button>
+      </div>
+      <div class="admin-card-list" id="leads-list">
+        <p class="spinner-text">Carregando...</p>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section class="admin-panel" id="panel-posts">
+      <div class="admin-toolbar">
+        <h2>Publicações do blog</h2>
+        <button class="btn btn-primary btn-sm" id="new-post-btn">+ Novo post</button>
+      </div>
+      <div class="admin-card-list" id="posts-list">
+        <p class="spinner-text">Carregando...</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Modal editor de post -->
+<div class="modal-overlay" id="post-modal">
+  <div class="modal-box">
+    <h2 id="modal-title">Novo post</h2>
+    <form id="post-form">
+      <input type="hidden" id="post-id">
+      <div class="field">
+        <label for="post-title-input">Título *</label>
+        <input type="text" id="post-title-input" required>
+      </div>
+      <div class="field">
+        <label for="post-slug">Slug (URL) *</label>
+        <input type="text" id="post-slug" required pattern="[a-z0-9\-]+" title="Apenas letras minúsculas, números e hífens">
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="post-category">Categoria</label>
+          <input type="text" id="post-category" value="Geral">
+        </div>
+        <div class="field">
+          <label for="post-emoji">Emoji de capa</label>
+          <input type="text" id="post-emoji" value="📰" maxlength="4">
+        </div>
+      </div>
+      <div class="field">
+        <label for="post-excerpt">Resumo (aparece no card)</label>
+        <textarea id="post-excerpt" style="min-height:70px;"></textarea>
+      </div>
+      <div class="field">
+        <label for="post-content">Conteúdo completo</label>
+        <textarea id="post-content" style="min-height:220px;" placeholder="Separe os parágrafos com uma linha em branco."></textarea>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="post-published">
+        <label for="post-published" style="margin:0;">Publicar (visível no site)</label>
+      </div>
+      <div class="admin-error" id="post-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="icon-btn" id="cancel-post-btn">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="save-post-btn">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import { supabase } from '../js/supabase.js';
+
+  /* ---------- Auth guard ---------- */
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+  } else {
+    document.getElementById('user-email').textContent = session.user.email;
+  }
+
+  supabase.auth.onAuthStateChange((event, sess) => {
+    if (!sess) window.location.href = 'login.html';
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = 'login.html';
+  });
+
+  /* ---------- Tabs ---------- */
+  document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab-btn').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('.admin-panel').forEach((p) => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+  function formatDateTime(iso) {
+    return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  /* ---------- Leads (orçamentos) ---------- */
+  const leadsList = document.getElementById('leads-list');
+  const statusLabels = { novo: 'Novo', em_contato: 'Em contato', fechado: 'Fechado' };
+
+  async function loadLeads() {
+    leadsList.innerHTML = '<p class="spinner-text">Carregando...</p>';
+    const { data, error } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
+    if (error) {
+      leadsList.innerHTML = '<p class="spinner-text">Erro ao carregar: ' + escapeHtml(error.message) + '</p>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      leadsList.innerHTML = '<div class="empty-state">Nenhum pedido de orçamento recebido ainda.</div>';
+      return;
+    }
+    leadsList.innerHTML = data.map((lead) => `
+      <div class="lead-card" data-id="${lead.id}">
+        <div class="main">
+          <h3>${escapeHtml(lead.nome)}</h3>
+          <div class="meta-row">
+            <a href="https://wa.me/55${(lead.telefone || '').replace(/\D/g,'')}" target="_blank" rel="noopener">📞 ${escapeHtml(lead.telefone)}</a>
+            <a href="mailto:${escapeHtml(lead.email)}">✉️ ${escapeHtml(lead.email)}</a>
+            ${lead.tipo_evento ? `<span>🎫 ${escapeHtml(lead.tipo_evento)}</span>` : ''}
+            ${lead.data_evento ? `<span>📅 ${escapeHtml(lead.data_evento)}</span>` : ''}
+            ${lead.convidados ? `<span>👥 ${escapeHtml(lead.convidados)} convidados</span>` : ''}
+          </div>
+          ${lead.mensagem ? `<div class="msg">${escapeHtml(lead.mensagem)}</div>` : ''}
+        </div>
+        <div class="side">
+          <span class="lead-date">${formatDateTime(lead.created_at)}</span>
+          <select data-id="${lead.id}" class="status-select">
+            <option value="novo" ${lead.status === 'novo' ? 'selected' : ''}>Novo</option>
+            <option value="em_contato" ${lead.status === 'em_contato' ? 'selected' : ''}>Em contato</option>
+            <option value="fechado" ${lead.status === 'fechado' ? 'selected' : ''}>Fechado</option>
+          </select>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.status-select').forEach((sel) => {
+      sel.addEventListener('change', async () => {
+        await supabase.from('contacts').update({ status: sel.value }).eq('id', sel.dataset.id);
+      });
+    });
+  }
+
+  document.getElementById('refresh-leads').addEventListener('click', loadLeads);
+  loadLeads();
+
+  /* ---------- Posts (blog) ---------- */
+  const postsList = document.getElementById('posts-list');
+  const modal = document.getElementById('post-modal');
+  const postForm = document.getElementById('post-form');
+  const postError = document.getElementById('post-error');
+
+  async function loadPosts() {
+    postsList.innerHTML = '<p class="spinner-text">Carregando...</p>';
+    const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+    if (error) {
+      postsList.innerHTML = '<p class="spinner-text">Erro ao carregar: ' + escapeHtml(error.message) + '</p>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      postsList.innerHTML = '<div class="empty-state">Nenhum post cadastrado ainda. Clique em "+ Novo post" para começar.</div>';
+      return;
+    }
+    postsList.innerHTML = data.map((post) => `
+      <div class="post-row">
+        <div class="emoji">${post.emoji || '📰'}</div>
+        <div class="info">
+          <h3>${escapeHtml(post.title)}</h3>
+          <div class="meta">
+            <span class="status-badge ${post.published ? 'status-fechado' : 'status-novo'}">${post.published ? 'Publicado' : 'Rascunho'}</span>
+            &nbsp;·&nbsp; ${escapeHtml(post.category)} &nbsp;·&nbsp; ${formatDateTime(post.created_at)}
+          </div>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" data-edit="${post.id}">Editar</button>
+          <button class="icon-btn danger" data-delete="${post.id}">Excluir</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('[data-edit]').forEach((btn) => {
+      btn.addEventListener('click', () => openEditor(data.find((p) => p.id === btn.dataset.edit)));
+    });
+    document.querySelectorAll('[data-delete]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Tem certeza que deseja excluir este post?')) return;
+        await supabase.from('posts').delete().eq('id', btn.dataset.delete);
+        loadPosts();
+      });
+    });
+  }
+
+  function slugify(text) {
+    return text.toString().toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '').trim()
+      .replace(/\s+/g, '-').replace(/-+/g, '-');
+  }
+
+  let editingId = null;
+  let slugTouched = false;
+
+  function openEditor(post) {
+    postError.classList.remove('show');
+    editingId = post ? post.id : null;
+    slugTouched = !!post;
+    document.getElementById('modal-title').textContent = post ? 'Editar post' : 'Novo post';
+    document.getElementById('post-title-input').value = post ? post.title : '';
+    document.getElementById('post-slug').value = post ? post.slug : '';
+    document.getElementById('post-category').value = post ? post.category : 'Geral';
+    document.getElementById('post-emoji').value = post ? post.emoji : '📰';
+    document.getElementById('post-excerpt').value = post ? post.excerpt || '' : '';
+    document.getElementById('post-content').value = post ? post.content || '' : '';
+    document.getElementById('post-published').checked = post ? post.published : false;
+    modal.classList.add('show');
+  }
+
+  document.getElementById('new-post-btn').addEventListener('click', () => openEditor(null));
+  document.getElementById('cancel-post-btn').addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
+
+  document.getElementById('post-title-input').addEventListener('input', (e) => {
+    if (!slugTouched) document.getElementById('post-slug').value = slugify(e.target.value);
+  });
+  document.getElementById('post-slug').addEventListener('input', () => { slugTouched = true; });
+
+  postForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    postError.classList.remove('show');
+    const saveBtn = document.getElementById('save-post-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Salvando...';
+
+    const record = {
+      title: document.getElementById('post-title-input').value.trim(),
+      slug: slugify(document.getElementById('post-slug').value.trim()),
+      category: document.getElementById('post-category').value.trim() || 'Geral',
+      emoji: document.getElementById('post-emoji').value.trim() || '📰',
+      excerpt: document.getElementById('post-excerpt').value.trim(),
+      content: document.getElementById('post-content').value.trim(),
+      published: document.getElementById('post-published').checked
+    };
+
+    let error;
+    if (editingId) {
+      ({ error } = await supabase.from('posts').update(record).eq('id', editingId));
+    } else {
+      ({ error } = await supabase.from('posts').insert(record));
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Salvar';
+
+    if (error) {
+      postError.textContent = error.code === '23505'
+        ? 'Já existe um post com esse slug. Escolha outro.'
+        : 'Erro ao salvar: ' + error.message;
+      postError.classList.add('show');
+      return;
+    }
+
+    modal.classList.remove('show');
+    loadPosts();
+  });
+
+  loadPosts();
+</script>
+</body>
+</html>

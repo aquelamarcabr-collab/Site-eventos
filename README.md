@@ -10,15 +10,37 @@ quem-somos.html      Quem Somos (história, missão, visão, valores)
 servicos.html        Serviços (todas as categorias do portfólio)
 portfolio.html       Portfólio (galeria com filtros)
 clientes.html        Clientes / segmentos atendidos
-blog.html            Blog & Notícias
-contato.html         Contato + formulário de orçamento (Netlify Forms)
+blog.html            Blog & Notícias (posts carregados do Supabase)
+post.html            Página de um post individual (?slug=...)
+contato.html         Contato + formulário de orçamento (Netlify Forms + Supabase)
 obrigado.html        Página de agradecimento pós-formulário
 404.html             Página de erro
 css/style.css        Estilos (design system: navy + bronze/cobre)
 js/main.js           Menu mobile, animações, filtros do portfólio
+js/supabase.js        Cliente Supabase compartilhado (URL + chave pública)
 assets/              Logo (SVG) gerada para o projeto + favicon
+admin/login.html      Login do painel administrativo
+admin/index.html      Painel admin (orçamentos + gestão do blog)
+admin/admin.css        Estilos do painel admin
 robots.txt, sitemap.xml, netlify.toml   SEO e configuração de deploy
 ```
+
+## Painel Administrativo
+
+O site tem um painel admin em `/admin/login.html`, protegido por login (Supabase Auth). Nele o cliente consegue, sem depender de programador:
+
+- **Orçamentos**: ver todos os pedidos enviados pelo formulário de contato (nome, telefone, e-mail, tipo de evento, data, nº de convidados, mensagem) e marcar o status de cada um (Novo / Em contato / Fechado).
+- **Blog**: criar, editar, publicar/despublicar e excluir posts do blog — sem precisar mexer em código. O que estiver marcado "Publicar" aparece automaticamente em `blog.html`.
+
+**Como acessar**: abra `SEUDOMINIO/admin/login.html` e entre com o e-mail `aquelamarca.br@gmail.com` e a senha que foi enviada separadamente no chat (por segurança, ela não fica salva neste repositório). Recomendo trocar a senha após o primeiro acesso (Supabase → Authentication → Users → ⋮ → Reset password, ou implementar uma tela de "esqueci minha senha" depois).
+
+O `/admin/` está bloqueado para indexação (robots.txt + header `X-Robots-Tag`), mas **não é invisível** — qualquer pessoa que souber a URL cai na tela de login. A segurança real vem do login em si (Supabase Auth) e das políticas de acesso do banco (Row Level Security): só um usuário autenticado consegue ler/editar orçamentos e posts; o público só consegue enviar o formulário de contato e ler posts publicados.
+
+### Backend (Supabase)
+
+- Projeto: `dmigesybgcsjwibeaose` (banco Postgres + Auth), já conectado ao site via `js/supabase.js`.
+- Tabelas: `posts` (blog) e `contacts` (orçamentos), com Row Level Security habilitado.
+- A chave usada no front-end é a **chave pública (anon)** — é seguro que ela apareça no código-fonte, pois todo o controle de acesso é feito pelas políticas RLS no banco, não pela chave.
 
 ## ⚠️ Antes de publicar — dados a confirmar com o cliente
 
@@ -39,7 +61,11 @@ Como o cliente ainda não enviou uma logo, foi criada uma marca original em SVG 
 
 ## Formulário de orçamento (Netlify Forms)
 
-O formulário em `contato.html` já está configurado para o **Netlify Forms** (`data-netlify="true"`), sem precisar de backend. Após o primeiro deploy:
+O formulário em `contato.html` grava em dois lugares ao mesmo tempo:
+1. **Supabase** (tabela `contacts`) — para aparecer no painel admin (`/admin/`).
+2. **Netlify Forms** (`data-netlify="true"`) — para notificação por e-mail nativa da Netlify.
+
+Após o primeiro deploy:
 1. No painel Netlify → **Forms**, o formulário `orcamento` aparecerá automaticamente.
 2. Configure notificações por e-mail em Site settings → Forms → Form notifications.
 3. Recomenda-se ativar o reCAPTCHA/Akismet do Netlify Forms para reduzir spam.

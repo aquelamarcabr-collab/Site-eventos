@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog & Notícias | G.R. Master Eventos & Consultoria</title>
-<meta name="description" content="Dicas, novidades e conteúdos sobre produção de eventos, infraestrutura e tendências do setor pela G.R. Master Eventos & Consultoria.">
+<title id="page-title">Blog | G.R. Master Eventos & Consultoria</title>
+<meta name="description" id="page-description" content="Conteúdos sobre planejamento, infraestrutura e tendências do mercado de eventos.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://grmastereventos.com.br/blog.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Blog & Notícias | G.R. Master Eventos & Consultoria">
 <link rel="icon" type="image/svg+xml" href="assets/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .post-content p { color: var(--text); margin-bottom: 18px; line-height: 1.8; }
+  .post-hero-emoji { font-size: 3rem; margin-bottom: 10px; }
+</style>
 </head>
 <body>
 
@@ -39,39 +40,32 @@
 <main>
   <section class="page-hero">
     <div class="container">
-      <div class="breadcrumb"><a href="index.html">Home</a> / Blog</div>
-      <h1>Blog &amp; Notícias</h1>
-      <p>Conteúdos sobre planejamento, infraestrutura e tendências do mercado de eventos.</p>
+      <div class="breadcrumb"><a href="index.html">Home</a> / <a href="blog.html">Blog</a> / <span id="crumb-title">Post</span></div>
+      <div class="post-hero-emoji" id="post-emoji">📰</div>
+      <h1 id="post-title">Carregando...</h1>
+      <p id="post-meta"></p>
     </div>
   </section>
 
   <section>
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="eyebrow">Novidades</div>
-        <h2>Últimos conteúdos</h2>
-        <p>Artigos sobre bastidores de produção, tendências e boas práticas para o seu evento.</p>
-      </div>
-
-      <div class="grid blog-grid reveal" id="blog-posts">
-        <p style="color:var(--text-light);">Carregando publicações...</p>
+    <div class="container" style="max-width:780px;">
+      <div class="post-content reveal" id="post-content"></div>
+      <div class="mt-3">
+        <a href="blog.html" class="btn btn-navy">&larr; Voltar para o Blog</a>
       </div>
     </div>
   </section>
 
   <section class="bg-off">
     <div class="container">
-      <div class="newsletter-box reveal">
+      <div class="cta-band" style="background:none;padding:0;">
         <div>
-          <h3>Receba novidades da G.R. Master</h3>
-          <p style="margin:0;">Inscreva-se para ser avisado quando novos conteúdos forem publicados.</p>
+          <h2>Gostou do conteúdo?</h2>
+          <p>Fale com a gente e solicite um orçamento para o seu evento.</p>
         </div>
-        <form class="newsletter-form" name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="newsletter">
-          <p style="display:none;"><label>Não preencher: <input name="bot-field"></label></p>
-          <input type="email" name="email" placeholder="Seu melhor e-mail" required>
-          <button type="submit" class="btn btn-primary">Inscrever</button>
-        </form>
+        <div class="actions">
+          <a href="contato.html#orcamento-form" class="btn btn-primary">Solicitar orçamento</a>
+        </div>
       </div>
     </div>
   </section>
@@ -130,50 +124,43 @@
 <script type="module">
   import { supabase } from './js/supabase.js';
 
-  const gradients = [
-    'linear-gradient(135deg,#0F2E52,#B8875A)',
-    'linear-gradient(135deg,#16406E,#0B2340)',
-    'linear-gradient(135deg,#9C7443,#0F2E52)',
-    'linear-gradient(135deg,#0B2340,#B8875A)',
-    'linear-gradient(135deg,#16406E,#9C7443)'
-  ];
-
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
 
-  function formatDate(iso) {
-    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('slug');
+  const contentEl = document.getElementById('post-content');
+
+  if (!slug) {
+    contentEl.innerHTML = '<p>Post não encontrado. <a href="blog.html">Voltar para o blog</a>.</p>';
+  } else {
+    supabase
+      .from('posts')
+      .select('title, content, category, emoji, author, created_at')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          contentEl.innerHTML = '<p>Post não encontrado. <a href="blog.html">Voltar para o blog</a>.</p>';
+          return;
+        }
+        document.getElementById('page-title').textContent = data.title + ' | G.R. Master Eventos & Consultoria';
+        document.getElementById('page-description').setAttribute('content', data.title);
+        document.getElementById('crumb-title').textContent = data.title;
+        document.getElementById('post-emoji').textContent = data.emoji || '📰';
+        document.getElementById('post-title').textContent = data.title;
+        const date = new Date(data.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        document.getElementById('post-meta').textContent = `${data.category} · ${date} · ${data.author}`;
+        contentEl.innerHTML = String(data.content || '')
+          .split(/\n\s*\n/)
+          .map((p) => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+          .join('');
+      });
   }
-
-  const container = document.getElementById('blog-posts');
-
-  supabase
-    .from('posts')
-    .select('title, slug, excerpt, category, emoji, author, created_at')
-    .eq('published', true)
-    .order('created_at', { ascending: false })
-    .then(({ data, error }) => {
-      if (error || !data || data.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-light);">Nenhuma publicação disponível no momento. Volte em breve!</p>';
-        return;
-      }
-      container.innerHTML = data.map((post, i) => `
-        <article class="blog-card">
-          <a href="post.html?slug=${encodeURIComponent(post.slug)}" style="display:block;">
-            <div class="blog-thumb" style="background:${gradients[i % gradients.length]};">${post.emoji || '📰'}</div>
-            <div class="blog-body">
-              <span class="blog-cat">${escapeHtml(post.category)}</span>
-              <h3>${escapeHtml(post.title)}</h3>
-              <p>${escapeHtml(post.excerpt)}</p>
-              <div class="blog-meta"><span>${formatDate(post.created_at)}</span><span>${escapeHtml(post.author)}</span></div>
-            </div>
-          </a>
-        </article>
-      `).join('');
-    });
 </script>
 </body>
 </html>
