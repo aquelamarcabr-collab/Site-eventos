@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="G.R. Master Eventos e Consultoria">
+  <defs>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2E52"/>
+      <stop offset="100%" stop-color="#081B32"/>
+    </linearGradient>
+    <linearGradient id="bronzeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#9C7443"/>
+      <stop offset="100%" stop-color="#E4BE8D"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,4 7.75,18 7.75,46 32,60 56.25,46 56.25,18" fill="url(#navyGrad)" stroke="#C08A52" stroke-width="1.4"/>
+  <rect x="19" y="37" width="7" height="15" rx="1.5" fill="url(#bronzeGrad)"/>
+  <rect x="28.5" y="27" width="7" height="25" rx="1.5" fill="url(#bronzeGrad)"/>
+  <rect x="38" y="15" width="7" height="37" rx="1.5" fill="url(#bronzeGrad)"/>
+  <circle cx="41.5" cy="11" r="3.4" fill="#EFD2A6"/>
+</svg>
