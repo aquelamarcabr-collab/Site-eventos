@@ -22,18 +22,16 @@ robots.txt, sitemap.xml, netlify.toml   SEO e configuração de deploy
 
 ## ⚠️ Antes de publicar — dados a confirmar com o cliente
 
-O briefing enviado não trouxe telefone, e-mail e Instagram oficiais. Foram usados **placeholders** que precisam ser substituídos em todos os arquivos HTML (busque e substitua globalmente):
+WhatsApp (`+55 11 97705-3323`) e e-mail (`aquelamarca.br@gmail.com`) já estão atualizados em todo o site. Ainda restam estes placeholders para confirmar:
 
 | Placeholder usado | Onde aparece | Trocar por |
 |---|---|---|
-| `5511900000000` (WhatsApp) | Botão flutuante, header, footer, formulário | Número real do WhatsApp comercial (DDI+DDD+número) |
-| `contato@grmastereventos.com.br` | Footer, página Contato | E-mail comercial real |
 | `@grmastereventos` / `instagram.com/grmastereventos` | Footer, Contato | Perfil real do Instagram |
 | `grmastereventos.com.br` | Meta tags `canonical`, `og:url`, JSON-LD, `sitemap.xml`, `robots.txt` | Domínio definitivo do site |
 
 Dica: como todos os arquivos repetem o mesmo header/footer, um `find` + `sed` resolve rápido, por exemplo:
 ```bash
-grep -rl "5511900000000" . | xargs sed -i 's/5511900000000/55SEUNUMERO/g'
+grep -rl "grmastereventos.com.br" . | xargs sed -i 's/grmastereventos\.com\.br/SEUDOMINIO.com.br/g'
 ```
 
 ## Logo
