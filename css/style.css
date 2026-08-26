@@ -96,7 +96,7 @@ section{padding:88px 0;}
 
 @media(max-width:960px){
   .nav-links{
-    position:fixed;top:82px;left:0;right:0;bottom:0;background:#fff;
+    position:fixed;top:82px;left:0;right:0;height:calc(100vh - 82px);background:#fff;
     flex-direction:column;justify-content:flex-start;align-items:flex-start;
     padding:36px 24px;gap:24px;transform:translateX(100%);transition:transform .3s ease;
     overflow-y:auto;
