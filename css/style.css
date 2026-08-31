@@ -241,7 +241,10 @@ section{padding:88px 0;}
 
 .quote-card{background:var(--off-white);border-radius:var(--radius);padding:30px;border-left:4px solid var(--bronze);}
 .quote-card p{color:var(--text);font-style:italic;}
-.quote-card .who{margin-top:16px;font-weight:700;color:var(--navy);font-style:normal;font-size:.88rem;}
+.quote-card .who{margin-top:16px;display:flex;align-items:center;gap:12px;font-style:normal;}
+.quote-card .who img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.quote-card .who strong{display:block;font-weight:700;color:var(--navy);font-size:.88rem;}
+.quote-card .who span{display:block;font-size:.78rem;color:var(--text-light);}
 
 /* ---------- Blog ---------- */
 .blog-grid{grid-template-columns:repeat(3,1fr);}

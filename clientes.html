@@ -98,11 +98,11 @@
 
   <section>
     <div class="container">
-      <div class="section-head center reveal">
+      <div class="section-head center reveal" id="testimonials-head">
         <div class="eyebrow">Nossos princípios com você</div>
         <h2>O que dizemos, entregamos</h2>
       </div>
-      <div class="grid cards-3 reveal">
+      <div class="grid cards-3 reveal" id="testimonials-list">
         <div class="quote-card">
           <p>"Trabalhamos para que cada cliente sinta confiança em cada etapa do projeto, com transparência do orçamento à entrega final."</p>
           <div class="who">Equipe G.R. Master</div>
@@ -184,5 +184,38 @@
 </a>
 
 <script src="js/main.js"></script>
+<script type="module">
+  import { supabase } from './js/supabase.js';
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  (async () => {
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) return;
+
+    document.getElementById('testimonials-head').querySelector('.eyebrow').textContent = 'Depoimentos';
+    document.getElementById('testimonials-head').querySelector('h2').textContent = 'Quem confiou, recomenda';
+
+    document.getElementById('testimonials-list').innerHTML = data.map((t) => `
+      <div class="quote-card reveal in">
+        <p>"${escapeHtml(t.quote)}"</p>
+        <div class="who">
+          ${t.photo_url ? `<img src="${escapeHtml(t.photo_url)}" alt="${escapeHtml(t.client_name)}">` : ''}
+          <div>
+            <strong>${escapeHtml(t.client_name)}</strong>
+            ${t.client_role ? `<span>${escapeHtml(t.client_role)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  })();
+</script>
 </body>
 </html>

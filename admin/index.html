@@ -31,6 +31,8 @@
     <div class="admin-tabs">
       <button class="admin-tab-btn active" data-tab="leads">Orçamentos</button>
       <button class="admin-tab-btn" data-tab="posts">Blog</button>
+      <button class="admin-tab-btn" data-tab="works">Trabalhos</button>
+      <button class="admin-tab-btn" data-tab="testimonials">Depoimentos</button>
     </div>
 
     <!-- ORÇAMENTOS -->
@@ -51,6 +53,28 @@
         <button class="btn btn-primary btn-sm" id="new-post-btn">+ Novo post</button>
       </div>
       <div class="admin-card-list" id="posts-list">
+        <p class="spinner-text">Carregando...</p>
+      </div>
+    </section>
+
+    <!-- TRABALHOS -->
+    <section class="admin-panel" id="panel-works">
+      <div class="admin-toolbar">
+        <h2>Trabalhos (fotos e vídeos)</h2>
+        <button class="btn btn-primary btn-sm" id="new-work-btn">+ Novo trabalho</button>
+      </div>
+      <div class="admin-card-list" id="works-list">
+        <p class="spinner-text">Carregando...</p>
+      </div>
+    </section>
+
+    <!-- DEPOIMENTOS -->
+    <section class="admin-panel" id="panel-testimonials">
+      <div class="admin-toolbar">
+        <h2>Depoimentos de clientes</h2>
+        <button class="btn btn-primary btn-sm" id="new-testimonial-btn">+ Novo depoimento</button>
+      </div>
+      <div class="admin-card-list" id="testimonials-list">
         <p class="spinner-text">Carregando...</p>
       </div>
     </section>
@@ -98,6 +122,99 @@
       <div class="modal-actions">
         <button type="button" class="icon-btn" id="cancel-post-btn">Cancelar</button>
         <button type="submit" class="btn btn-primary" id="save-post-btn">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal editor de trabalho -->
+<div class="modal-overlay" id="work-modal">
+  <div class="modal-box">
+    <h2 id="work-modal-title">Novo trabalho</h2>
+    <form id="work-form">
+      <input type="hidden" id="work-id">
+      <div class="field">
+        <label for="work-title">Título *</label>
+        <input type="text" id="work-title" required placeholder="Ex: Convenção Empresarial XP 2026">
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="work-category">Categoria</label>
+          <select id="work-category">
+            <option value="corporativo">Corporativo</option>
+            <option value="social">Social</option>
+            <option value="cultural">Cultural</option>
+            <option value="feira">Feiras &amp; Congressos</option>
+            <option value="show">Shows &amp; Festivais</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="work-type">Tipo</label>
+          <select id="work-type">
+            <option value="foto">Foto</option>
+            <option value="video">Vídeo</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" id="work-image-field">
+        <label for="work-image-file">Foto</label>
+        <input type="file" id="work-image-file" accept="image/*">
+        <img id="work-image-preview" style="display:none;max-width:100%;border-radius:10px;margin-top:10px;">
+      </div>
+      <div class="field" id="work-video-field" style="display:none;">
+        <label for="work-video-url">Link do vídeo (YouTube, Instagram etc.)</label>
+        <input type="url" id="work-video-url" placeholder="https://youtube.com/watch?v=...">
+      </div>
+      <div class="field">
+        <label for="work-description">Descrição (opcional)</label>
+        <textarea id="work-description" style="min-height:70px;"></textarea>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="work-published">
+        <label for="work-published" style="margin:0;">Publicar (visível no Portfólio do site)</label>
+      </div>
+      <div class="admin-error" id="work-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="icon-btn" id="cancel-work-btn">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="save-work-btn">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal editor de depoimento -->
+<div class="modal-overlay" id="testimonial-modal">
+  <div class="modal-box">
+    <h2 id="testimonial-modal-title">Novo depoimento</h2>
+    <form id="testimonial-form">
+      <input type="hidden" id="testimonial-id">
+      <div class="form-row">
+        <div class="field">
+          <label for="testimonial-name">Nome do cliente *</label>
+          <input type="text" id="testimonial-name" required>
+        </div>
+        <div class="field">
+          <label for="testimonial-role">Cargo / Empresa</label>
+          <input type="text" id="testimonial-role" placeholder="Ex: Diretora de Eventos, Empresa XP">
+        </div>
+      </div>
+      <div class="field">
+        <label for="testimonial-quote">Depoimento *</label>
+        <textarea id="testimonial-quote" required style="min-height:100px;" placeholder="O que o cliente disse sobre o trabalho da G.R. Master"></textarea>
+      </div>
+      <div class="field">
+        <label for="testimonial-photo-file">Foto do cliente (opcional)</label>
+        <input type="file" id="testimonial-photo-file" accept="image/*">
+        <img id="testimonial-photo-preview" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:50%;margin-top:10px;">
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="testimonial-published">
+        <label for="testimonial-published" style="margin:0;">Publicar (visível no site)</label>
+      </div>
+      <div class="admin-error" id="testimonial-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="icon-btn" id="cancel-testimonial-btn">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="save-testimonial-btn">Salvar</button>
       </div>
     </form>
   </div>
@@ -311,6 +428,269 @@
   });
 
   loadPosts();
+
+  /* ---------- Trabalhos (portfólio) ---------- */
+  const worksList = document.getElementById('works-list');
+  const workModal = document.getElementById('work-modal');
+  const workForm = document.getElementById('work-form');
+  const workError = document.getElementById('work-error');
+  const categoryLabels = { corporativo: 'Corporativo', social: 'Social', cultural: 'Cultural', feira: 'Feiras & Congressos', show: 'Shows & Festivais' };
+  let editingWorkId = null;
+  let workImageFile = null;
+  let workImageUrl = null;
+
+  async function uploadMedia(file, folder) {
+    const ext = file.name.split('.').pop();
+    const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from('media').upload(path, file);
+    if (error) throw error;
+    const { data } = supabase.storage.from('media').getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  async function loadWorks() {
+    worksList.innerHTML = '<p class="spinner-text">Carregando...</p>';
+    const { data, error } = await supabase.from('works').select('*').order('created_at', { ascending: false });
+    if (error) {
+      worksList.innerHTML = '<p class="spinner-text">Erro ao carregar: ' + escapeHtml(error.message) + '</p>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      worksList.innerHTML = '<div class="empty-state">Nenhum trabalho cadastrado ainda. Clique em "+ Novo trabalho" para adicionar fotos ou vídeos.</div>';
+      return;
+    }
+    worksList.innerHTML = data.map((w) => `
+      <div class="post-row">
+        <div class="emoji">${w.type === 'video' ? '🎬' : (w.image_url ? `<img src="${escapeHtml(w.image_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '📷')}</div>
+        <div class="info">
+          <h3>${escapeHtml(w.title)}</h3>
+          <div class="meta">
+            <span class="status-badge ${w.published ? 'status-fechado' : 'status-novo'}">${w.published ? 'Publicado' : 'Rascunho'}</span>
+            &nbsp;·&nbsp; ${escapeHtml(categoryLabels[w.category] || w.category)} &nbsp;·&nbsp; ${w.type === 'video' ? 'Vídeo' : 'Foto'}
+          </div>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" data-edit-work="${w.id}">Editar</button>
+          <button class="icon-btn danger" data-delete-work="${w.id}">Excluir</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('[data-edit-work]').forEach((btn) => {
+      btn.addEventListener('click', () => openWorkEditor(data.find((w) => w.id === btn.dataset.editWork)));
+    });
+    document.querySelectorAll('[data-delete-work]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Tem certeza que deseja excluir este trabalho?')) return;
+        await supabase.from('works').delete().eq('id', btn.dataset.deleteWork);
+        loadWorks();
+      });
+    });
+  }
+
+  function toggleWorkTypeFields() {
+    const isVideo = document.getElementById('work-type').value === 'video';
+    document.getElementById('work-video-field').style.display = isVideo ? '' : 'none';
+    document.getElementById('work-image-field').style.display = isVideo ? 'none' : '';
+  }
+  document.getElementById('work-type').addEventListener('change', toggleWorkTypeFields);
+
+  function openWorkEditor(work) {
+    workError.classList.remove('show');
+    editingWorkId = work ? work.id : null;
+    workImageFile = null;
+    workImageUrl = work ? work.image_url : null;
+    document.getElementById('work-modal-title').textContent = work ? 'Editar trabalho' : 'Novo trabalho';
+    document.getElementById('work-title').value = work ? work.title : '';
+    document.getElementById('work-category').value = work ? work.category : 'corporativo';
+    document.getElementById('work-type').value = work ? work.type : 'foto';
+    document.getElementById('work-video-url').value = work ? (work.video_url || '') : '';
+    document.getElementById('work-description').value = work ? (work.description || '') : '';
+    document.getElementById('work-published').checked = work ? work.published : false;
+    document.getElementById('work-image-file').value = '';
+    const preview = document.getElementById('work-image-preview');
+    if (workImageUrl) { preview.src = workImageUrl; preview.style.display = ''; } else { preview.style.display = 'none'; }
+    toggleWorkTypeFields();
+    workModal.classList.add('show');
+  }
+
+  document.getElementById('work-image-file').addEventListener('change', (e) => {
+    workImageFile = e.target.files[0] || null;
+    if (workImageFile) {
+      const preview = document.getElementById('work-image-preview');
+      preview.src = URL.createObjectURL(workImageFile);
+      preview.style.display = '';
+    }
+  });
+
+  document.getElementById('new-work-btn').addEventListener('click', () => openWorkEditor(null));
+  document.getElementById('cancel-work-btn').addEventListener('click', () => workModal.classList.remove('show'));
+  workModal.addEventListener('click', (e) => { if (e.target === workModal) workModal.classList.remove('show'); });
+
+  workForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    workError.classList.remove('show');
+    const saveBtn = document.getElementById('save-work-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Salvando...';
+
+    try {
+      const type = document.getElementById('work-type').value;
+      let imageUrl = workImageUrl;
+      if (type === 'foto' && workImageFile) {
+        imageUrl = await uploadMedia(workImageFile, 'works');
+      }
+
+      const record = {
+        title: document.getElementById('work-title').value.trim(),
+        category: document.getElementById('work-category').value,
+        type,
+        image_url: type === 'foto' ? imageUrl : null,
+        video_url: type === 'video' ? document.getElementById('work-video-url').value.trim() || null : null,
+        description: document.getElementById('work-description').value.trim() || null,
+        published: document.getElementById('work-published').checked
+      };
+
+      let error;
+      if (editingWorkId) {
+        ({ error } = await supabase.from('works').update(record).eq('id', editingWorkId));
+      } else {
+        ({ error } = await supabase.from('works').insert(record));
+      }
+      if (error) throw error;
+
+      workModal.classList.remove('show');
+      loadWorks();
+    } catch (err) {
+      workError.textContent = 'Erro ao salvar: ' + err.message;
+      workError.classList.add('show');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Salvar';
+    }
+  });
+
+  loadWorks();
+
+  /* ---------- Depoimentos ---------- */
+  const testimonialsList = document.getElementById('testimonials-list');
+  const testimonialModal = document.getElementById('testimonial-modal');
+  const testimonialForm = document.getElementById('testimonial-form');
+  const testimonialError = document.getElementById('testimonial-error');
+  let editingTestimonialId = null;
+  let testimonialPhotoFile = null;
+  let testimonialPhotoUrl = null;
+
+  async function loadTestimonials() {
+    testimonialsList.innerHTML = '<p class="spinner-text">Carregando...</p>';
+    const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+    if (error) {
+      testimonialsList.innerHTML = '<p class="spinner-text">Erro ao carregar: ' + escapeHtml(error.message) + '</p>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      testimonialsList.innerHTML = '<div class="empty-state">Nenhum depoimento cadastrado ainda. Clique em "+ Novo depoimento" para adicionar.</div>';
+      return;
+    }
+    testimonialsList.innerHTML = data.map((t) => `
+      <div class="post-row">
+        <div class="emoji">${t.photo_url ? `<img src="${escapeHtml(t.photo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : '💬'}</div>
+        <div class="info">
+          <h3>${escapeHtml(t.client_name)}</h3>
+          <div class="meta">
+            <span class="status-badge ${t.published ? 'status-fechado' : 'status-novo'}">${t.published ? 'Publicado' : 'Rascunho'}</span>
+            ${t.client_role ? `&nbsp;·&nbsp; ${escapeHtml(t.client_role)}` : ''}
+          </div>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" data-edit-testimonial="${t.id}">Editar</button>
+          <button class="icon-btn danger" data-delete-testimonial="${t.id}">Excluir</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('[data-edit-testimonial]').forEach((btn) => {
+      btn.addEventListener('click', () => openTestimonialEditor(data.find((t) => t.id === btn.dataset.editTestimonial)));
+    });
+    document.querySelectorAll('[data-delete-testimonial]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Tem certeza que deseja excluir este depoimento?')) return;
+        await supabase.from('testimonials').delete().eq('id', btn.dataset.deleteTestimonial);
+        loadTestimonials();
+      });
+    });
+  }
+
+  function openTestimonialEditor(testimonial) {
+    testimonialError.classList.remove('show');
+    editingTestimonialId = testimonial ? testimonial.id : null;
+    testimonialPhotoFile = null;
+    testimonialPhotoUrl = testimonial ? testimonial.photo_url : null;
+    document.getElementById('testimonial-modal-title').textContent = testimonial ? 'Editar depoimento' : 'Novo depoimento';
+    document.getElementById('testimonial-name').value = testimonial ? testimonial.client_name : '';
+    document.getElementById('testimonial-role').value = testimonial ? (testimonial.client_role || '') : '';
+    document.getElementById('testimonial-quote').value = testimonial ? testimonial.quote : '';
+    document.getElementById('testimonial-published').checked = testimonial ? testimonial.published : false;
+    document.getElementById('testimonial-photo-file').value = '';
+    const preview = document.getElementById('testimonial-photo-preview');
+    if (testimonialPhotoUrl) { preview.src = testimonialPhotoUrl; preview.style.display = ''; } else { preview.style.display = 'none'; }
+    testimonialModal.classList.add('show');
+  }
+
+  document.getElementById('testimonial-photo-file').addEventListener('change', (e) => {
+    testimonialPhotoFile = e.target.files[0] || null;
+    if (testimonialPhotoFile) {
+      const preview = document.getElementById('testimonial-photo-preview');
+      preview.src = URL.createObjectURL(testimonialPhotoFile);
+      preview.style.display = '';
+    }
+  });
+
+  document.getElementById('new-testimonial-btn').addEventListener('click', () => openTestimonialEditor(null));
+  document.getElementById('cancel-testimonial-btn').addEventListener('click', () => testimonialModal.classList.remove('show'));
+  testimonialModal.addEventListener('click', (e) => { if (e.target === testimonialModal) testimonialModal.classList.remove('show'); });
+
+  testimonialForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    testimonialError.classList.remove('show');
+    const saveBtn = document.getElementById('save-testimonial-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Salvando...';
+
+    try {
+      let photoUrl = testimonialPhotoUrl;
+      if (testimonialPhotoFile) {
+        photoUrl = await uploadMedia(testimonialPhotoFile, 'testimonials');
+      }
+
+      const record = {
+        client_name: document.getElementById('testimonial-name').value.trim(),
+        client_role: document.getElementById('testimonial-role').value.trim() || null,
+        quote: document.getElementById('testimonial-quote').value.trim(),
+        photo_url: photoUrl,
+        published: document.getElementById('testimonial-published').checked
+      };
+
+      let error;
+      if (editingTestimonialId) {
+        ({ error } = await supabase.from('testimonials').update(record).eq('id', editingTestimonialId));
+      } else {
+        ({ error } = await supabase.from('testimonials').insert(record));
+      }
+      if (error) throw error;
+
+      testimonialModal.classList.remove('show');
+      loadTestimonials();
+    } catch (err) {
+      testimonialError.textContent = 'Erro ao salvar: ' + err.message;
+      testimonialError.classList.add('show');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Salvar';
+    }
+  });
+
+  loadTestimonials();
 </script>
 </body>
 </html>

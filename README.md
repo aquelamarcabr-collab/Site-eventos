@@ -31,6 +31,8 @@ O site tem um painel admin em `/admin/login.html`, protegido por login (Supabase
 
 - **Orçamentos**: ver todos os pedidos enviados pelo formulário de contato (nome, telefone, e-mail, tipo de evento, data, nº de convidados, mensagem) e marcar o status de cada um (Novo / Em contato / Fechado).
 - **Blog**: criar, editar, publicar/despublicar e excluir posts do blog — sem precisar mexer em código. O que estiver marcado "Publicar" aparece automaticamente em `blog.html`.
+- **Trabalhos**: adicionar fotos (upload direto, fica salvo no Supabase Storage) ou vídeos (cole o link do YouTube/Instagram/Vimeo) dos eventos executados, com título e categoria. O que estiver "Publicar" aparece automaticamente na grade do Portfólio (`portfolio.html`), respeitando os filtros por categoria.
+- **Depoimentos**: adicionar depoimentos de clientes (nome, cargo/empresa, texto e foto opcional). O que estiver "Publicar" aparece automaticamente na seção de depoimentos da página Clientes (`clientes.html`), substituindo os textos de exemplo.
 
 **Como acessar**: abra `https://grmasterconsultoria.com/admin/login.html` e entre com o e-mail `aquelamarca.br@gmail.com` e a senha que foi enviada separadamente no chat (por segurança, ela não fica salva neste repositório). Recomendo trocar a senha após o primeiro acesso (Supabase → Authentication → Users → ⋮ → Reset password, ou implementar uma tela de "esqueci minha senha" depois).
 
@@ -39,7 +41,8 @@ O `/admin/` está bloqueado para indexação (robots.txt + header `X-Robots-Tag`
 ### Backend (Supabase)
 
 - Projeto: `dmigesybgcsjwibeaose` (banco Postgres + Auth), já conectado ao site via `js/supabase.js`.
-- Tabelas: `posts` (blog) e `contacts` (orçamentos), com Row Level Security habilitado.
+- Tabelas: `posts` (blog), `contacts` (orçamentos), `works` (trabalhos/portfólio) e `testimonials` (depoimentos), todas com Row Level Security habilitado (público só lê o que está `published = true`; só um usuário logado no admin lê/escreve tudo).
+- Storage: bucket público `media`, usado pelo admin para upload das fotos de trabalhos e depoimentos (pasta `works/` e `testimonials/`).
 - A chave usada no front-end é a **chave pública (anon)** — é seguro que ela apareça no código-fonte, pois todo o controle de acesso é feito pelas políticas RLS no banco, não pela chave.
 
 ## Dados de contato e domínio
@@ -79,7 +82,7 @@ Há também um formulário de newsletter em `blog.html` (`name="newsletter"`).
 
 ## Portfólio e Clientes
 
-As páginas `portfolio.html` e `clientes.html` usam placeholders visuais (sem fotos reais e sem depoimentos atribuídos a clientes específicos), já que nenhum material fotográfico foi enviado. Assim que o cliente fornecer fotos de eventos reais, substitua os blocos `.gallery-item` por `<img>` das fotos.
+`portfolio.html` e `clientes.html` mostram placeholders visuais (blocos de cor, sem fotos reais e sem depoimentos atribuídos a clientes específicos) **apenas enquanto não há nada cadastrado no admin**. Assim que o cliente publicar ao menos um trabalho na aba **Trabalhos** ou um depoimento na aba **Depoimentos** do painel admin, a página correspondente troca automaticamente os placeholders pelo conteúdo real — não precisa mexer em código.
 
 ## Deploy na Netlify
 

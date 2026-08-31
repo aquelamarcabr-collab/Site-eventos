@@ -56,7 +56,7 @@
         <button class="filter-btn" data-filter="show">Shows &amp; Festivais</button>
       </div>
 
-      <div class="gallery">
+      <div class="gallery" id="gallery-list">
         <div class="gallery-item g1 reveal" data-cat="corporativo">
           <div><span>Corporativo</span><h4>Convenções e Eventos Empresariais</h4></div>
         </div>
@@ -77,7 +77,7 @@
         </div>
       </div>
 
-      <div class="gallery-note reveal">
+      <div class="gallery-note reveal" id="gallery-note">
         <span>📸</span>
         <span>Estas são representações ilustrativas dos formatos de evento que atendemos. Fotos reais dos projetos executados pela G.R. Master serão adicionadas em breve — entre em contato para conhecer nosso portfólio completo.</span>
       </div>
@@ -149,5 +149,60 @@
 </a>
 
 <script src="js/main.js"></script>
+<script type="module">
+  import { supabase } from './js/supabase.js';
+
+  const categoryLabels = { corporativo: 'Corporativo', social: 'Social', cultural: 'Cultural', feira: 'Feiras & Congressos', show: 'Shows & Festivais' };
+  const shapeClasses = ['g1', 'g2', 'g3', 'g4', 'g5', 'g6'];
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  function rebindFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    filterBtns.forEach((btn) => {
+      btn.onclick = () => {
+        filterBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = btn.getAttribute('data-filter');
+        galleryItems.forEach((item) => {
+          item.style.display = (cat === 'all' || item.getAttribute('data-cat') === cat) ? '' : 'none';
+        });
+      };
+    });
+  }
+
+  (async () => {
+    const { data, error } = await supabase
+      .from('works')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) return;
+
+    document.getElementById('gallery-list').innerHTML = data.map((w, i) => {
+      const label = escapeHtml(categoryLabels[w.category] || w.category);
+      const title = `<div><span>${label}</span><h4>${escapeHtml(w.title)}</h4></div>`;
+      if (w.type === 'video' && w.video_url) {
+        const shape = shapeClasses[i % shapeClasses.length];
+        return `<a href="${escapeHtml(w.video_url)}" target="_blank" rel="noopener" class="gallery-item ${shape} reveal in" data-cat="${escapeHtml(w.category)}" style="${w.image_url ? `background-image:url('${escapeHtml(w.image_url)}');background-size:cover;background-position:center;` : ''}">
+          <span style="position:absolute;top:14px;right:14px;z-index:1;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:1rem;">▶️</span>
+          ${title}
+        </a>`;
+      }
+      const shape = shapeClasses[i % shapeClasses.length];
+      const bg = w.image_url ? `background-image:url('${escapeHtml(w.image_url)}');background-size:cover;background-position:center;` : '';
+      return `<div class="gallery-item ${w.image_url ? '' : shape} reveal in" data-cat="${escapeHtml(w.category)}" style="${bg}">${title}</div>`;
+    }).join('');
+
+    document.getElementById('gallery-note').innerHTML =
+      '<span>📸</span><span>Fotos e vídeos reais dos projetos executados pela G.R. Master.</span>';
+
+    rebindFilters();
+  })();
+</script>
 </body>
 </html>
