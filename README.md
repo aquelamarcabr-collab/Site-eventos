@@ -44,7 +44,7 @@ O `/admin/` está bloqueado para indexação (robots.txt + header `X-Robots-Tag`
 
 ## ⚠️ Antes de publicar — dados a confirmar com o cliente
 
-WhatsApp (`+55 11 97705-3323`) e e-mail (`aquelamarca.br@gmail.com`) já estão atualizados em todo o site. O cliente não possui Instagram, então todos os links/ícones foram removidos. Ainda resta este placeholder para confirmar:
+WhatsApp (`+55 11 97705-3323`) e e-mail (`comercial@grmasterconsultoria.com`) já estão atualizados em todo o site. O cliente não possui Instagram, então todos os links/ícones foram removidos. Ainda resta este placeholder para confirmar:
 
 | Placeholder usado | Onde aparece | Trocar por |
 |---|---|---|
